@@ -1,0 +1,13 @@
+package com.company.erp.supplier;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface SupplierRepository extends JpaRepository<Supplier, UUID> {
+
+    List<Supplier> findByActiveTrue();
+
+    boolean existsByNameIgnoreCase(String name);
+}
