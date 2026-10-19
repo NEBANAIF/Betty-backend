@@ -71,6 +71,10 @@ public class StockChangeRequest extends BaseEntity {
     @JoinColumn(name = "batch_id")
     private ProductBatch batch;
 
+    /** EDIT_BATCH only: the batch number to set (null = leave as is). costPrice / expiryDate hold the other proposed values. */
+    @Column(name = "new_batch_number", length = 100)
+    private String newBatchNumber;
+
     @Column(length = 500)
     private String note;
 

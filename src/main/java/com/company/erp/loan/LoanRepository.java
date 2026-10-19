@@ -36,10 +36,19 @@ public interface LoanRepository extends JpaRepository<Loan, UUID>, JpaSpecificat
         return search(branchIds, customerId, status, overdueOnly, null, null, null, pageable);
     }
 
-    /** Same again, plus an optional range on the due date and a text search (customer name/phone or sale number). */
     default Page<Loan> search(List<UUID> branchIds, UUID customerId, LoanStatus status,
                               boolean overdueOnly, LocalDate dueFrom, LocalDate dueTo, String search,
                               Pageable pageable) {
+        return search(branchIds, customerId, status, overdueOnly, false, dueFrom, dueTo, search, pageable);
+    }
+
+    /**
+     * Same again, plus an optional range on the due date, a text search (customer name/phone or sale number) and
+     * {@code outstandingOnly}: hide loans that are fully paid (the paid ones stay in the database and in Payments).
+     */
+    default Page<Loan> search(List<UUID> branchIds, UUID customerId, LoanStatus status,
+                              boolean overdueOnly, boolean outstandingOnly, LocalDate dueFrom, LocalDate dueTo,
+                              String search, Pageable pageable) {
         Specification<Loan> spec = (root, query, cb) -> {
             List<Predicate> p = new ArrayList<>();
             p.add(SearchSpecs.idIn(root.get("branch").get("id"), branchIds, cb));
@@ -48,6 +57,9 @@ public interface LoanRepository extends JpaRepository<Loan, UUID>, JpaSpecificat
             }
             if (status != null) {
                 p.add(cb.equal(root.get("status"), status));
+            }
+            if (outstandingOnly) {
+                p.add(cb.notEqual(root.get("status"), LoanStatus.PAID));
             }
             if (overdueOnly) {
                 p.add(cb.greaterThan(root.<BigDecimal>get("remainingAmount"), BigDecimal.ZERO));

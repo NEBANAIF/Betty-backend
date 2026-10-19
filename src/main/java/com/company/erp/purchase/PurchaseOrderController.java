@@ -1,5 +1,7 @@
 package com.company.erp.purchase;
 
+import org.springframework.web.bind.annotation.PutMapping;
+import com.company.erp.purchase.dto.UpdateShipmentRequest;
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.company.erp.common.dto.PageResponse;
@@ -39,8 +41,18 @@ public class PurchaseOrderController {
             @RequestParam(required = false) UUID productId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(required = false) PurchaseType purchaseType,
+            @RequestParam(required = false) String originCountry,
+            @RequestParam(required = false) String destinationCountry,
+            @RequestParam(required = false) String currentCountry,
+            @RequestParam(required = false) UUID warehouseId,
+            @RequestParam(required = false) String shipmentStatus,
+            @RequestParam(required = false) Integer arrivalMonth,
+            @RequestParam(required = false) Integer arrivalYear,
             Pageable pageable) {
-        return purchaseOrderService.search(scope, branchId, supplierId, status, search, productId, from, to, pageable);
+        return purchaseOrderService.search(scope, branchId, new PurchaseSearchCriteria(supplierId, status, search,
+                productId, from, to, purchaseType, originCountry, destinationCountry, currentCountry, warehouseId,
+                shipmentStatus, arrivalMonth, arrivalYear), pageable);
     }
 
     @GetMapping("/{id}")
@@ -71,6 +83,13 @@ public class PurchaseOrderController {
     @PreAuthorize("hasAuthority('PURCHASE_CREATE')")
     public PurchaseOrderResponse cancel(@PathVariable UUID id) {
         return purchaseOrderService.cancel(id);
+    }
+
+    /** Updates where a global purchase's goods are (the route). Never changes stock. */
+    @PutMapping("/{id}/shipment")
+    @PreAuthorize("hasAuthority('PURCHASE_CREATE') or hasAuthority('PURCHASE_RECEIVE')")
+    public PurchaseOrderResponse updateShipment(@PathVariable UUID id, @Valid @RequestBody UpdateShipmentRequest request) {
+        return purchaseOrderService.updateShipment(id, request);
     }
 
     @PostMapping("/{id}/receive")

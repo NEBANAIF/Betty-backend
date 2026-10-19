@@ -19,6 +19,9 @@ import java.util.UUID;
  *   expiryDate optional (for perishable/medical goods that track a shelf life); note optional.
  * REMOVE_STOCK (needs STOCK_ADJUST): movementType ADJUSTMENT / DAMAGED / LOST and a note (the reason) required;
  *   batchId optional - leave it out to take the oldest stock first.
+ * EDIT_BATCH (needs BATCH_CREATE or STOCK_ADJUST): batchId required; batchNumber, costPrice and expiryDate are the
+ *   values the batch should have once approved (a blank batchNumber or missing costPrice leaves it as is, an empty
+ *   expiryDate clears it). productId / branchId / quantity must match the batch; quantity is never changed.
  * Fields that don't apply to the chosen type are ignored.
  */
 public record SubmitStockChangeRequest(
@@ -31,6 +34,7 @@ public record SubmitStockChangeRequest(
         LocalDate expiryDate,
         StockMovementType movementType,
         UUID batchId,
+        @Size(max = 100) String batchNumber,
         @Size(max = 400) String note
 ) {
 }

@@ -25,6 +25,8 @@ public record StockChangeResponse(
         String movementType,
         UUID batchId,
         String batchNumber,
+        /** EDIT_BATCH only: the batch number it will get. */
+        String newBatchNumber,
         String note,
         String requestedByName,
         Instant requestedAt,
@@ -46,6 +48,7 @@ public record StockChangeResponse(
                 r.getMovementType() != null ? r.getMovementType().name() : null,
                 r.getBatch() != null ? r.getBatch().getId() : null,
                 r.getBatch() != null ? r.getBatch().getBatchNumber() : null,
+                r.getNewBatchNumber(),
                 r.getNote(),
                 r.getRequestedBy().getName(), r.getCreatedAt(),
                 r.getReviewedBy() != null ? r.getReviewedBy().getName() : null,

@@ -14,6 +14,7 @@ import com.company.erp.payment.Payment;
 import com.company.erp.payment.PaymentReferenceType;
 import com.company.erp.payment.PaymentRepository;
 import com.company.erp.payment.dto.PaymentResponse;
+import com.company.erp.sales.PaymentStatus;
 import com.company.erp.sales.Sale;
 import com.company.erp.security.BranchAccessService;
 import com.company.erp.user.User;
@@ -122,6 +123,7 @@ public class LoanService {
         loan.setPaidAmount(loan.getPaidAmount().add(request.amount()));
         loan.setRemainingAmount(loan.getOriginalAmount().subtract(loan.getPaidAmount()));
         loan.setStatus(deriveStatus(loan.getPaidAmount(), loan.getRemainingAmount()));
+        syncSaleWithLoan(loan, request.amount());
 
         financialTransactionService.record(loan.getBranch(), FinancialTransactionType.PAYMENT_IN, request.amount(),
                 LocalDate.now(), FinancialReferenceType.LOAN_PAYMENT, loan.getId());
@@ -133,7 +135,7 @@ public class LoanService {
     public PageResponse<LoanSummaryResponse> search(BranchAccessService.BranchScope scope, UUID specificBranchId,
                                                       UUID customerId, LoanStatus status,
                                                       java.time.LocalDate dueFrom, java.time.LocalDate dueTo,
-                                                      String search,
+                                                      String search, boolean outstandingOnly,
                                                       Pageable pageable) {
         var branchIds = branchAccessService.resolveReadableBranchIds(scope, specificBranchId);
         // OVERDUE is never a persisted status (see LoanStatus) - translate
@@ -141,7 +143,7 @@ public class LoanService {
         // that would never match a stored row.
         boolean overdueOnly = status == LoanStatus.OVERDUE;
         LoanStatus persistedFilter = overdueOnly ? null : status;
-        var page = loanRepository.search(branchIds, customerId, persistedFilter, overdueOnly, dueFrom, dueTo, search, pageable)
+        var page = loanRepository.search(branchIds, customerId, persistedFilter, overdueOnly, outstandingOnly, dueFrom, dueTo, search, pageable)
                 .map(LoanSummaryResponse::from);
         return PageResponse.of(page);
     }
@@ -192,7 +194,29 @@ public class LoanService {
         loan.setOriginalAmount(loan.getOriginalAmount().subtract(applied));
         loan.setRemainingAmount(loan.getOriginalAmount().subtract(loan.getPaidAmount()));
         loan.setStatus(deriveStatus(loan.getPaidAmount(), loan.getRemainingAmount()));
+        syncSaleWithLoan(loan, BigDecimal.ZERO);
         return applied;
+    }
+
+    /**
+     * Keeps the sale the loan belongs to in step with it, so Sales History tells the same story as the Loans
+     * page: money collected on the loan counts as paid on the sale, "owed" is whatever the loan still owes, and
+     * the sale becomes PAID once nothing is owed (it stays PARTIAL while something is, or CREDIT if nothing at
+     * all has been paid yet). {@code collected} is cash/bank just received (zero for a return write-down).
+     */
+    private void syncSaleWithLoan(Loan loan, BigDecimal collected) {
+        Sale sale = loan.getSale();
+        if (sale == null) {
+            return;
+        }
+        BigDecimal paidSoFar = sale.getPaidAmount() == null ? BigDecimal.ZERO : sale.getPaidAmount();
+        sale.setPaidAmount(paidSoFar.add(collected));
+        sale.setRemainingAmount(loan.getRemainingAmount());
+        if (loan.getRemainingAmount().signum() <= 0) {
+            sale.setPaymentStatus(PaymentStatus.PAID);
+        } else if (sale.getPaidAmount().signum() > 0) {
+            sale.setPaymentStatus(PaymentStatus.PARTIAL);
+        }
     }
 
     /**

@@ -132,6 +132,38 @@ class LoanServiceTest {
     }
 
     @Test
+    void payingTheLoanOffMarksTheSaleAsPaidWithNothingOwed() {
+        Loan loan = openLoan(BigDecimal.valueOf(500));
+        when(loanRepository.findById(loan.getId())).thenReturn(Optional.of(loan));
+        Sale sale = loan.getSale();
+        sale.setPaidAmount(BigDecimal.valueOf(3500));
+        sale.setPaymentStatus(com.company.erp.sales.PaymentStatus.PARTIAL);
+
+        service.recordPayment(loan.getId(),
+                new RecordLoanPaymentRequest(PaymentMethod.CASH, BigDecimal.valueOf(500), null, null, null));
+
+        assertThat(sale.getPaymentStatus()).isEqualTo(com.company.erp.sales.PaymentStatus.PAID);
+        assertThat(sale.getRemainingAmount()).isEqualByComparingTo("0");
+        assertThat(sale.getPaidAmount()).isEqualByComparingTo("4000");
+    }
+
+    @Test
+    void aPartPaymentKeepsTheSalePartialAndShrinksWhatIsOwed() {
+        Loan loan = openLoan(BigDecimal.valueOf(2000));
+        when(loanRepository.findById(loan.getId())).thenReturn(Optional.of(loan));
+        Sale sale = loan.getSale();
+        sale.setPaidAmount(BigDecimal.ZERO);
+        sale.setPaymentStatus(com.company.erp.sales.PaymentStatus.CREDIT);
+
+        service.recordPayment(loan.getId(),
+                new RecordLoanPaymentRequest(PaymentMethod.CASH, BigDecimal.valueOf(800), null, null, null));
+
+        assertThat(sale.getPaymentStatus()).isEqualTo(com.company.erp.sales.PaymentStatus.PARTIAL);
+        assertThat(sale.getRemainingAmount()).isEqualByComparingTo("1200");
+        assertThat(sale.getPaidAmount()).isEqualByComparingTo("800");
+    }
+
+    @Test
     void overpayingALoanIsRejected() {
         Loan loan = openLoan(BigDecimal.valueOf(2000));
         when(loanRepository.findById(loan.getId())).thenReturn(Optional.of(loan));

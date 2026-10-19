@@ -102,7 +102,7 @@ class StockChangeServiceTest {
     @Test
     void enteringABatchOnlyHoldsItNothingMovesUntilItIsApproved() {
         var response = service.submit(new SubmitStockChangeRequest(StockChangeType.ADD_BATCH, product.getId(),
-                branch.getId(), 5, new BigDecimal("12.50"), null, LocalDate.of(2026, 9, 1), null, null, "Initial stock"));
+                branch.getId(), 5, new BigDecimal("12.50"), null, LocalDate.of(2026, 9, 1), null, null, null, "Initial stock"));
 
         assertThat(response.status()).isEqualTo("PENDING");
         assertThat(response.quantity()).isEqualTo(5);
@@ -117,7 +117,7 @@ class StockChangeServiceTest {
     @Test
     void approvingMovesTheStockAsEnteredAndRecordsWhoApprovedIt() {
         var held = service.submit(new SubmitStockChangeRequest(StockChangeType.ADD_BATCH, product.getId(),
-                branch.getId(), 50, new BigDecimal("12.50"), null, LocalDate.of(2026, 9, 1), null, null, "Initial stock"));
+                branch.getId(), 50, new BigDecimal("12.50"), null, LocalDate.of(2026, 9, 1), null, null, null, "Initial stock"));
         StockChangeRequest stored = captureSaved();
         when(requestRepository.findById(held.id())).thenReturn(Optional.of(stored));
 
@@ -134,7 +134,7 @@ class StockChangeServiceTest {
     @Test
     void aRejectedChangeNeverMovesStockAndCannotBeApprovedAfterwards() {
         var held = service.submit(new SubmitStockChangeRequest(StockChangeType.ADD_BATCH, product.getId(),
-                branch.getId(), 5, BigDecimal.TEN, null, null, null, null, null));
+                branch.getId(), 5, BigDecimal.TEN, null, null, null, null, null, null));
         StockChangeRequest stored = captureSaved();
         when(requestRepository.findById(held.id())).thenReturn(Optional.of(stored));
 
@@ -155,15 +155,15 @@ class StockChangeServiceTest {
                 .thenReturn(Optional.of(inventory));
 
         assertThatThrownBy(() -> service.submit(new SubmitStockChangeRequest(StockChangeType.REMOVE_STOCK,
-                product.getId(), branch.getId(), 3, null, null, null, StockMovementType.DAMAGED, null, "  ")))
+                product.getId(), branch.getId(), 3, null, null, null, StockMovementType.DAMAGED, null, null, "  ")))
                 .isInstanceOf(BusinessRuleViolationException.class).hasMessageContaining("reason");
 
         assertThatThrownBy(() -> service.submit(new SubmitStockChangeRequest(StockChangeType.REMOVE_STOCK,
-                product.getId(), branch.getId(), 11, null, null, null, StockMovementType.DAMAGED, null, "broken")))
+                product.getId(), branch.getId(), 11, null, null, null, StockMovementType.DAMAGED, null, null, "broken")))
                 .isInstanceOf(BusinessRuleViolationException.class).hasMessageContaining("Only 10");
 
         assertThatThrownBy(() -> service.submit(new SubmitStockChangeRequest(StockChangeType.REMOVE_STOCK,
-                product.getId(), branch.getId(), 3, null, null, null, StockMovementType.SALE, null, "x")))
+                product.getId(), branch.getId(), 3, null, null, null, StockMovementType.SALE, null, null, "x")))
                 .isInstanceOf(BusinessRuleViolationException.class).hasMessageContaining("why");
     }
 
@@ -174,7 +174,7 @@ class StockChangeServiceTest {
         when(inventoryRepository.findByProductIdAndBranchId(product.getId(), branch.getId()))
                 .thenReturn(Optional.of(inventory));
         var held = service.submit(new SubmitStockChangeRequest(StockChangeType.REMOVE_STOCK, product.getId(),
-                branch.getId(), 45, null, null, null, StockMovementType.ADJUSTMENT, null, "Initial stock was entered as 500, should be 455"));
+                branch.getId(), 45, null, null, null, StockMovementType.ADJUSTMENT, null, null, "Initial stock was entered as 500, should be 455"));
         StockChangeRequest stored = captureSaved();
         when(requestRepository.findById(held.id())).thenReturn(Optional.of(stored));
 
@@ -197,7 +197,7 @@ class StockChangeServiceTest {
         when(productBatchRepository.findById(batchId)).thenReturn(Optional.of(other));
 
         assertThatThrownBy(() -> service.submit(new SubmitStockChangeRequest(StockChangeType.REMOVE_STOCK,
-                product.getId(), branch.getId(), 3, null, null, null, StockMovementType.LOST, batchId, "gone")))
+                product.getId(), branch.getId(), 3, null, null, null, StockMovementType.LOST, batchId, null, "gone")))
                 .isInstanceOf(BusinessRuleViolationException.class);
     }
 
@@ -210,7 +210,7 @@ class StockChangeServiceTest {
         when(branchAccessService.currentUser()).thenReturn(new UserPrincipal(staff));
 
         assertThatThrownBy(() -> service.submit(new SubmitStockChangeRequest(StockChangeType.ADD_BATCH,
-                product.getId(), branch.getId(), 5, BigDecimal.ONE, null, null, null, null, null)))
+                product.getId(), branch.getId(), 5, BigDecimal.ONE, null, null, null, null, null, null)))
                 .isInstanceOf(ForbiddenException.class);
 
         StockChangeRequest others = new StockChangeRequest();

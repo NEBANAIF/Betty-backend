@@ -1,4 +1,5 @@
 com\company\erp\dashboard\DashboardContentFilter.class
+com\company\erp\purchase\dto\UpdateShipmentRequest.class
 com\company\erp\settings\ThemeSettingsValidator.class
 com\company\erp\auth\AuthService.class
 com\company\erp\bank\BankService.class
@@ -17,6 +18,7 @@ com\company\erp\bank\dto\BankResponse.class
 com\company\erp\customer\dto\CustomerResponse.class
 com\company\erp\customer\dto\CustomerBalanceResponse.class
 com\company\erp\config\DevSeedDataRunner.class
+com\company\erp\purchase\PurchaseSearchCriteria.class
 com\company\erp\sales\dto\SaleBatchAllocationResponse.class
 com\company\erp\inventory\StockOverviewService.class
 com\company\erp\inventory\dto\StockAdjustmentRequest$AdjustmentDirection.class
@@ -24,6 +26,8 @@ com\company\erp\security\BranchAccessService$1.class
 com\company\erp\transfer\dto\RejectTransferRequest.class
 com\company\erp\config\CorsConfig.class
 com\company\erp\payment\PaymentController.class
+com\company\erp\purchase\PurchaseReceipt.class
+com\company\erp\purchase\ShippingMethod.class
 com\company\erp\bank\BankController.class
 com\company\erp\stockhistory\StockHistoryRepository.class
 com\company\erp\common\query\SearchSpecs.class
@@ -33,6 +37,8 @@ com\company\erp\loan\LoanRepository.class
 com\company\erp\dashboard\DashboardService.class
 com\company\erp\batch\BatchController.class
 com\company\erp\inventory\dto\StockAttentionRow.class
+com\company\erp\purchase\ShipmentCalculator$Summary.class
+com\company\erp\purchase\StageStatus.class
 com\company\erp\stockchange\StockChangeService.class
 com\company\erp\inventory\BatchEntryService.class
 com\company\erp\notification\dto\NotificationCountsResponse.class
@@ -60,7 +66,9 @@ com\company\erp\payment\PaymentRepository.class
 com\company\erp\purchase\PurchaseOrderService.class
 com\company\erp\inventory\dto\ProductCostRow.class
 com\company\erp\batch\dto\CreateBatchRequest.class
+com\company\erp\purchase\PurchaseShipmentStage.class
 com\company\erp\batch\BatchCostCorrectionService.class
+com\company\erp\purchase\PurchaseReceiptRepository.class
 com\company\erp\user\dto\CreateUserRequest.class
 com\company\erp\expense\ExpenseService.class
 com\company\erp\finance\FinancialTransactionRepository.class
@@ -79,10 +87,12 @@ com\company\erp\user\RolePermissionRegistry.class
 com\company\erp\customer\Customer.class
 com\company\erp\customer\CustomerController.class
 com\company\erp\inventory\StockAdjustmentService.class
+com\company\erp\purchase\ShipmentCalculator$StageMetrics.class
 com\company\erp\branch\dto\SetActiveRequest.class
 com\company\erp\inventory\dto\StockStatusReportResponse.class
 com\company\erp\finance\FinancialTransaction.class
 com\company\erp\security\JwtTokenProvider.class
+com\company\erp\purchase\dto\ShipmentStageRequest.class
 com\company\erp\stockhistory\StockHistoryQueryService.class
 com\company\erp\common\exception\InvalidPaymentException.class
 com\company\erp\supplier\dto\SupplierResponse.class
@@ -95,9 +105,11 @@ com\company\erp\purchase\PurchaseOrder.class
 com\company\erp\config\JpaAuditingConfig.class
 com\company\erp\inventory\StockMutationService.class
 com\company\erp\branch\BranchRepository.class
+com\company\erp\purchase\dto\PurchaseReceiptResponse.class
 com\company\erp\returns\customer\CustomerReturnService.class
 com\company\erp\inventory\dto\StockAdjustmentRequest.class
 com\company\erp\user\dto\UpdateUserRequest.class
+com\company\erp\purchase\PurchaseReceiptLine.class
 com\company\erp\user\UserService$1.class
 com\company\erp\returns\supplier\dto\SupplierReturnItemResponse.class
 com\company\erp\stockchange\StockChangeRequestRepository.class
@@ -108,6 +120,7 @@ com\company\erp\inventory\dto\StockSummaryResponse.class
 com\company\erp\transfer\dto\CreateTransferItemRequest.class
 com\company\erp\auth\dto\CurrentUserResponse.class
 com\company\erp\expense\ExpenseCategory.class
+com\company\erp\purchase\dto\PurchaseReceiptResponse$Line.class
 com\company\erp\branch\dto\UpdateBranchRequest.class
 com\company\erp\stockhistory\StockMovementType.class
 com\company\erp\stockchange\StockChangeController.class
@@ -144,12 +157,14 @@ com\company\erp\inventory\InventoryService.class
 com\company\erp\security\UserPrincipal.class
 com\company\erp\common\exception\DuplicateResourceException.class
 com\company\erp\inventory\StockAdjustmentService$1.class
+com\company\erp\purchase\ShipmentStatus.class
 com\company\erp\notification\ReviewStatus.class
 com\company\erp\returns\supplier\SupplierReturnAllocation.class
 com\company\erp\batch\dto\BatchResponse.class
 com\company\erp\product\importer\ProductImportTemplateService.class
 com\company\erp\branch\dto\BranchResponse.class
 com\company\erp\returns\supplier\dto\CreateSupplierReturnRequest.class
+com\company\erp\purchase\PurchaseType.class
 com\company\erp\roles\RolesController.class
 com\company\erp\transfer\TransferStatus.class
 com\company\erp\sales\dto\SaleItemResponse.class
@@ -194,6 +209,7 @@ com\company\erp\inventory\InventoryRepository.class
 com\company\erp\product\importer\ProductImportService$1.class
 com\company\erp\product\ProductService.class
 com\company\erp\settings\dto\PublicSettingsResponse.class
+com\company\erp\purchase\ShipmentCalculator.class
 com\company\erp\returns\supplier\SupplierReturnAllocationRepository.class
 com\company\erp\common\exception\ErpException.class
 com\company\erp\settings\dto\SystemSettingsRequest.class
@@ -221,6 +237,7 @@ com\company\erp\inventory\dto\StockOverviewRow.class
 com\company\erp\supplier\dto\SupplierBalanceResponse.class
 com\company\erp\transfer\StockTransferRepository.class
 com\company\erp\common\audit\BaseEntity.class
+com\company\erp\purchase\dto\ShipmentStageResponse.class
 com\company\erp\transfer\dto\CreateTransferRequest.class
 com\company\erp\roles\dto\AccessRoleResponse.class
 com\company\erp\security\BranchAccessService$BranchScope.class
@@ -228,6 +245,7 @@ com\company\erp\payment\PaymentReferenceType.class
 com\company\erp\common\exception\InvalidTransferException.class
 com\company\erp\purchase\PurchaseOrderItemRepository.class
 com\company\erp\returns\supplier\SupplierReturn.class
+com\company\erp\purchase\RouteValidator.class
 com\company\erp\transfer\dto\TransferAllocationResponse.class
 com\company\erp\supplier\SupplierController.class
 com\company\erp\notification\NotificationController.class

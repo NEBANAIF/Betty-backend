@@ -41,10 +41,11 @@ public class LoanController {
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) LoanStatus status,
             @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "false") boolean outstandingOnly,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueTo,
             Pageable pageable) {
-        return loanService.search(scope, branchId, customerId, status, dueFrom, dueTo, search, pageable);
+        return loanService.search(scope, branchId, customerId, status, dueFrom, dueTo, search, outstandingOnly, pageable);
     }
 
     @GetMapping("/{id}")

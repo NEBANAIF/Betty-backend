@@ -80,7 +80,12 @@ public class StockChangeService {
 
         UserPrincipal caller = branchAccessService.currentUser();
         boolean adding = request.changeType() == StockChangeType.ADD_BATCH;
-        if (!caller.hasPermission(adding ? Permission.BATCH_CREATE : Permission.STOCK_ADJUST)) {
+        boolean editing = request.changeType() == StockChangeType.EDIT_BATCH;
+        if (editing) {
+            if (!caller.hasPermission(Permission.BATCH_CREATE) && !caller.hasPermission(Permission.STOCK_ADJUST)) {
+                throw new ForbiddenException("Your role is not allowed to edit batches");
+            }
+        } else if (!caller.hasPermission(adding ? Permission.BATCH_CREATE : Permission.STOCK_ADJUST)) {
             throw new ForbiddenException(adding
                     ? "Your role is not allowed to add batches"
                     : "Your role is not allowed to remove stock");
@@ -100,7 +105,9 @@ public class StockChangeService {
         change.setRequestedBy(requester);
         change.setNote(request.note() == null || request.note().isBlank() ? null : request.note().trim());
 
-        if (adding) {
+        if (editing) {
+            submitEdit(change, product, branch, request);
+        } else if (adding) {
             if (request.costPrice() == null) {
                 throw new BusinessRuleViolationException("Enter what one unit cost");
             }
@@ -127,6 +134,37 @@ public class StockChangeService {
         return toResponse(change, caller);
     }
 
+    /** Validates an EDIT_BATCH entry and records the proposed values on the held change. */
+    private void submitEdit(StockChangeRequest change, Product product, Branch branch, SubmitStockChangeRequest request) {
+        if (request.batchId() == null) {
+            throw new BusinessRuleViolationException("Pick the batch to edit");
+        }
+        ProductBatch batch = productBatchRepository.findById(request.batchId())
+                .orElseThrow(() -> ResourceNotFoundException.of("Batch", request.batchId()));
+        if (!batch.getProduct().getId().equals(product.getId()) || !batch.getBranch().getId().equals(branch.getId())) {
+            throw new BusinessRuleViolationException("That batch isn't " + product.getName() + " at " + branch.getName());
+        }
+        if (requestRepository.existsByBatchIdAndChangeTypeAndStatus(
+                batch.getId(), StockChangeType.EDIT_BATCH, StockChangeStatus.PENDING)) {
+            throw new BusinessRuleViolationException("Batch " + batch.getBatchNumber()
+                    + " already has an edit waiting for approval - approve or discard it first");
+        }
+
+        String newNumber = request.batchNumber() == null ? "" : request.batchNumber().trim();
+        if (!newNumber.isEmpty() && !newNumber.equals(batch.getBatchNumber())
+                && productBatchRepository.existsByBatchNumber(newNumber)) {
+            throw new BusinessRuleViolationException("Batch number " + newNumber + " is already used by another batch");
+        }
+        // Someone who cannot see costs cannot change them either.
+        boolean mayEditCost = contentAccess.can(Permission.VIEW_COSTS);
+
+        change.setBatch(batch);
+        change.setQuantity(batch.getQuantity()); // informational only - an edit never touches quantities
+        change.setNewBatchNumber(newNumber.isEmpty() ? null : newNumber);
+        change.setCostPrice(mayEditCost ? request.costPrice() : null);
+        change.setExpiryDate(request.expiryDate());
+    }
+
     // ------------------------------------------------------------------ approve / reject
 
     @Transactional
@@ -140,7 +178,9 @@ public class StockChangeService {
         // The stock history records who ENTERED it; the reason records who approved it.
         User enteredBy = change.getRequestedBy();
 
-        if (change.getChangeType() == StockChangeType.ADD_BATCH) {
+        if (change.getChangeType() == StockChangeType.EDIT_BATCH) {
+            applyEdit(change);
+        } else if (change.getChangeType() == StockChangeType.ADD_BATCH) {
             stockMutationService.receiveStock(product, branch, change.getQuantity(), change.getCostPrice(),
                     change.getReceivedDate(), StockMovementType.BATCH_ADDED,
                     reason(change.getNote(), "Batch added manually", approver), enteredBy,
@@ -160,6 +200,25 @@ public class StockChangeService {
         change.setReviewedAt(Instant.now());
         notificationService.resolveStockChangeRequest(change.getId(), ReviewStatus.APPROVED, approver);
         return toResponse(change, caller);
+    }
+
+    /** Writes the approved values onto the batch. Quantities and received date are left alone. */
+    private void applyEdit(StockChangeRequest change) {
+        ProductBatch batch = productBatchRepository.findById(change.getBatch().getId())
+                .orElseThrow(() -> ResourceNotFoundException.of("Batch", change.getBatch().getId()));
+        String newNumber = change.getNewBatchNumber();
+        if (newNumber != null && !newNumber.equals(batch.getBatchNumber())) {
+            if (productBatchRepository.existsByBatchNumber(newNumber)) {
+                throw new BusinessRuleViolationException(
+                        "Batch number " + newNumber + " has since been used by another batch");
+            }
+            batch.setBatchNumber(newNumber);
+        }
+        if (change.getCostPrice() != null) {
+            batch.setCostPrice(change.getCostPrice());
+        }
+        batch.setExpiryDate(change.getExpiryDate());
+        productBatchRepository.save(batch);
     }
 
     /** Discard a held change. Allowed for someone who can approve stock changes, or for whoever entered it. */
@@ -238,6 +297,10 @@ public class StockChangeService {
     }
 
     private String describe(StockChangeRequest c) {
+        if (c.getChangeType() == StockChangeType.EDIT_BATCH) {
+            return "Edit batch " + c.getBatch().getBatchNumber() + " of " + c.getProduct().getName()
+                    + " at " + c.getBranch().getName();
+        }
         String unit = c.getProduct().getUnit() == null || c.getProduct().getUnit().isBlank() ? "" : " " + c.getProduct().getUnit();
         String what = c.getChangeType() == StockChangeType.ADD_BATCH
                 ? "Add " + c.getQuantity() + unit + " of " + c.getProduct().getName()

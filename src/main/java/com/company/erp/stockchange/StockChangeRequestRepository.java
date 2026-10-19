@@ -11,4 +11,6 @@ public interface StockChangeRequestRepository extends JpaRepository<StockChangeR
 
     Page<StockChangeRequest> findByBranchIdInAndStatusOrderByCreatedAtDesc(
             List<UUID> branchIds, StockChangeStatus status, Pageable pageable);
+
+    boolean existsByBatchIdAndChangeTypeAndStatus(UUID batchId, StockChangeType changeType, StockChangeStatus status);
 }

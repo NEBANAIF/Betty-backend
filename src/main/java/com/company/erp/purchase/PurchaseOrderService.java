@@ -10,6 +10,9 @@ import com.company.erp.product.ProductRepository;
 import com.company.erp.purchase.dto.CreatePurchaseOrderItemRequest;
 import com.company.erp.purchase.dto.CreatePurchaseOrderRequest;
 import com.company.erp.purchase.dto.PurchaseOrderResponse;
+import com.company.erp.purchase.dto.ShipmentStageRequest;
+import com.company.erp.purchase.dto.UpdateShipmentRequest;
+import com.company.erp.branch.BranchType;
 import com.company.erp.purchase.dto.ReceivePurchaseItemRequest;
 import com.company.erp.purchase.dto.ReceivePurchaseRequest;
 import com.company.erp.security.BranchAccessService;
@@ -26,6 +29,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -51,6 +57,7 @@ public class PurchaseOrderService {
     private final UserRepository userRepository;
     private final BranchAccessService branchAccessService;
     private final StockMutationService stockMutationService;
+    private final PurchaseReceiptRepository purchaseReceiptRepository;
 
     @Transactional
     public PurchaseOrderResponse create(CreatePurchaseOrderRequest request) {
@@ -70,6 +77,12 @@ public class PurchaseOrderService {
         po.setStatus(PurchaseOrderStatus.DRAFT);
         po.setCreatedBy(creator);
 
+        PurchaseType type = request.purchaseType() != null ? request.purchaseType() : PurchaseType.LOCAL;
+        po.setPurchaseType(type);
+        if (type == PurchaseType.GLOBAL) {
+            applyGlobalDetails(po, request, branch);
+        }
+
         BigDecimal total = BigDecimal.ZERO;
         for (CreatePurchaseOrderItemRequest itemRequest : request.items()) {
             Product product = productRepository.findById(itemRequest.productId())
@@ -85,8 +98,56 @@ public class PurchaseOrderService {
             total = total.add(item.getLineTotal());
         }
         po.setTotal(total);
+        po.refreshShipmentSummary(LocalDate.now());
 
         return PurchaseOrderResponse.from(purchaseOrderRepository.save(po));
+    }
+
+    /**
+     * Replaces the route and shipment details of a global purchase. Only the journey changes here - this never
+     * adds stock, however far the goods have travelled.
+     */
+    @Transactional
+    public PurchaseOrderResponse updateShipment(UUID id, UpdateShipmentRequest request) {
+        PurchaseOrder po = findOrThrow(id);
+        branchAccessService.assertCanWriteToBranch(po.getBranch().getId());
+        if (!po.isGlobal()) {
+            throw new BusinessRuleViolationException("Only global purchases have a shipment to update");
+        }
+        if (po.getStatus() == PurchaseOrderStatus.CANCELLED) {
+            throw new BusinessRuleViolationException("Cannot update the shipment of a cancelled purchase order");
+        }
+
+        if (request.shippingMethod() != null) {
+            po.setShippingMethod(request.shippingMethod());
+        }
+        if (request.shippingCost() != null) {
+            po.setShippingCost(request.shippingCost());
+        }
+        if (request.expectedArrivalDate() != null) {
+            if (request.expectedArrivalDate().isBefore(po.getOrderDate())) {
+                throw new BusinessRuleViolationException("The expected arrival date cannot be before the order date");
+            }
+            po.setExpectedArrivalDate(request.expectedArrivalDate());
+        }
+        String newCurrency = request.currency() == null || request.currency().isBlank()
+                ? po.getCurrency() : normaliseCurrency(request.currency());
+        BigDecimal newRate = request.exchangeRate() != null ? request.exchangeRate() : po.getExchangeRate();
+        boolean moneyChanged = !newCurrency.equals(po.getCurrency()) || newRate.compareTo(po.getExchangeRate()) != 0;
+        if (moneyChanged) {
+            if (po.isPartiallyReceived()) {
+                throw new BusinessRuleViolationException(
+                        "The currency and exchange rate cannot change after stock has been received - it was already costed with them");
+            }
+            po.setCurrency(newCurrency);
+            po.setExchangeRate(newRate);
+        }
+
+        List<PurchaseShipmentStage> stages = buildStages(request.stages(), po.getOriginCountry(), po.getDestinationCountry());
+        po.getStages().clear();
+        stages.forEach(po::addStage);
+        po.refreshShipmentSummary(LocalDate.now());
+        return PurchaseOrderResponse.from(po);
     }
 
     @Transactional
@@ -137,6 +198,12 @@ public class PurchaseOrderService {
         PurchaseOrder po = findOrThrow(id);
         branchAccessService.assertCanWriteToBranch(po.getBranch().getId());
 
+        // One delivery can be booked in once only: the screen sends a fresh requestId per dialog.
+        if (request.requestId() != null && purchaseReceiptRepository.existsByRequestId(request.requestId())) {
+            throw new BusinessRuleViolationException(
+                    "This delivery has already been received - the stock was not added a second time");
+        }
+
         if (po.getStatus() != PurchaseOrderStatus.APPROVED
                 && po.getStatus() != PurchaseOrderStatus.PARTIALLY_RECEIVED) {
             throw new BusinessRuleViolationException(
@@ -149,6 +216,12 @@ public class PurchaseOrderService {
 
         Map<UUID, PurchaseOrderItem> itemsById = new HashMap<>();
         po.getItems().forEach(i -> itemsById.put(i.getId(), i));
+
+        PurchaseReceipt receipt = new PurchaseReceipt();
+        receipt.setRequestId(request.requestId());
+        receipt.setReceivedDate(receivedDate);
+        receipt.setReceivedBy(receivedBy);
+        receipt.setNote(request.note() == null || request.note().isBlank() ? null : request.note().trim());
 
         for (ReceivePurchaseItemRequest line : request.items()) {
             PurchaseOrderItem item = itemsById.get(line.purchaseOrderItemId());
@@ -163,16 +236,28 @@ public class PurchaseOrderService {
                                 " remain outstanding on this order");
             }
 
+            // An imported order is priced in a foreign currency; stock is costed in the local one.
+            BigDecimal batchCost = po.isGlobal()
+                    ? item.getUnitCost().multiply(po.getExchangeRate()).setScale(4, RoundingMode.HALF_UP)
+                    : item.getUnitCost();
+
             stockMutationService.receiveStock(
-                    item.getProduct(), po.getBranch(), line.quantityReceived(), item.getUnitCost(),
+                    item.getProduct(), po.getBranch(), line.quantityReceived(), batchCost,
                     receivedDate, StockMovementType.PURCHASE,
                     "Received against purchase order " + po.getOrderNumber(),
                     receivedBy, StockReferenceType.PURCHASE_ORDER, po.getId(), item.getId());
 
             item.setReceivedQuantity(item.getReceivedQuantity() + line.quantityReceived());
+
+            PurchaseReceiptLine receiptLine = new PurchaseReceiptLine();
+            receiptLine.setPurchaseOrderItem(item);
+            receiptLine.setQuantity(line.quantityReceived());
+            receipt.addLine(receiptLine);
         }
+        po.addReceipt(receipt);
 
         po.setStatus(po.isFullyReceived() ? PurchaseOrderStatus.RECEIVED : PurchaseOrderStatus.PARTIALLY_RECEIVED);
+        po.refreshShipmentSummary(LocalDate.now());
 
         return PurchaseOrderResponse.from(po);
     }
@@ -186,13 +271,79 @@ public class PurchaseOrderService {
 
     @Transactional(readOnly = true)
     public PageResponse<PurchaseOrderResponse> search(BranchAccessService.BranchScope scope, UUID specificBranchId,
-                                                        UUID supplierId, PurchaseOrderStatus status, String search,
-                                                        UUID productId, java.time.LocalDate from, java.time.LocalDate to,
-                                                        Pageable pageable) {
+                                                        PurchaseSearchCriteria criteria, Pageable pageable) {
+        if (criteria.shipmentStatus() != null && !criteria.shipmentStatus().isBlank()) {
+            String wanted = criteria.shipmentStatus().trim().toUpperCase();
+            if (!wanted.equals("DELAYED")) {
+                try {
+                    ShipmentStatus.valueOf(wanted);
+                } catch (IllegalArgumentException e) {
+                    throw new BusinessRuleViolationException("Unknown shipment status \"" + criteria.shipmentStatus()
+                            + "\" (use NOT_SHIPPED, IN_TRANSIT, ARRIVED or DELAYED)");
+                }
+            }
+        }
+        if (criteria.arrivalMonth() != null && (criteria.arrivalMonth() < 1 || criteria.arrivalMonth() > 12)) {
+            throw new BusinessRuleViolationException("The arrival month must be between 1 and 12");
+        }
         var branchIds = branchAccessService.resolveReadableBranchIds(scope, specificBranchId);
-        var page = purchaseOrderRepository.search(branchIds, supplierId, status, search, productId, from, to, pageable)
-                .map(PurchaseOrderResponse::from);
+        var page = purchaseOrderRepository.search(branchIds, criteria, pageable).map(PurchaseOrderResponse::from);
         return PageResponse.of(page);
+    }
+
+    /** Fills in and checks everything a global purchase needs on top of a local one. */
+    private void applyGlobalDetails(PurchaseOrder po, CreatePurchaseOrderRequest request, Branch warehouse) {
+        if (warehouse.getType() != BranchType.WAREHOUSE) {
+            throw new BusinessRuleViolationException(
+                    "A global purchase must be received into a warehouse - choose a warehouse as the destination");
+        }
+        String origin = requireText(request.originCountry(), "origin country");
+        String destination = requireText(request.destinationCountry(), "destination country");
+        if (origin.equalsIgnoreCase(destination)) {
+            throw new BusinessRuleViolationException(
+                    "The origin and destination country are the same - choose Local for a purchase inside one country");
+        }
+        if (request.shippingMethod() == null) {
+            throw new BusinessRuleViolationException("Choose a shipping method for a global purchase");
+        }
+        if (request.currency() == null || request.currency().isBlank()) {
+            throw new BusinessRuleViolationException("Enter the purchase currency for a global purchase");
+        }
+        if (request.expectedArrivalDate() == null) {
+            throw new BusinessRuleViolationException("Enter the expected arrival date for a global purchase");
+        }
+        if (request.expectedArrivalDate().isBefore(request.orderDate())) {
+            throw new BusinessRuleViolationException("The expected arrival date cannot be before the order date");
+        }
+
+        po.setOriginCountry(origin);
+        po.setDestinationCountry(destination);
+        po.setShippingMethod(request.shippingMethod());
+        po.setCurrency(normaliseCurrency(request.currency()));
+        po.setExchangeRate(request.exchangeRate() != null ? request.exchangeRate() : BigDecimal.ONE);
+        po.setShippingCost(request.shippingCost() != null ? request.shippingCost() : BigDecimal.ZERO);
+        po.setExpectedArrivalDate(request.expectedArrivalDate());
+
+        buildStages(request.stages(), origin, destination).forEach(po::addStage);
+    }
+
+    private List<PurchaseShipmentStage> buildStages(List<ShipmentStageRequest> requests, String origin, String destination) {
+        return RouteValidator.build(requests, origin, destination, LocalDate.now());
+    }
+
+    private static String requireText(String value, String what) {
+        if (value == null || value.isBlank()) {
+            throw new BusinessRuleViolationException("Enter the " + what + " for a global purchase");
+        }
+        return value.trim();
+    }
+
+    private static String normaliseCurrency(String raw) {
+        String code = raw.trim().toUpperCase();
+        if (!code.matches("[A-Z]{2,10}")) {
+            throw new BusinessRuleViolationException("The currency must be a code such as USD, EUR or CNY");
+        }
+        return code;
     }
 
     private void requireStatus(PurchaseOrder po, String action, PurchaseOrderStatus required) {
