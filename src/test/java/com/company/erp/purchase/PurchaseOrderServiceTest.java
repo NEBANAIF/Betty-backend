@@ -44,6 +44,7 @@ import static org.mockito.Mockito.when;
 class PurchaseOrderServiceTest {
 
     @Mock private PurchaseOrderRepository purchaseOrderRepository;
+    @Mock private com.company.erp.debt.DebtService debtService;
     @Mock private SupplierRepository supplierRepository;
     @Mock private BranchRepository branchRepository;
     @Mock private ProductRepository productRepository;
@@ -62,7 +63,7 @@ class PurchaseOrderServiceTest {
     @BeforeEach
     void setUp() {
         service = new PurchaseOrderService(purchaseOrderRepository, supplierRepository, branchRepository,
-                productRepository, userRepository, branchAccessService, stockMutationService, purchaseReceiptRepository);
+                productRepository, userRepository, branchAccessService, stockMutationService, purchaseReceiptRepository, debtService);
 
         branch = new Branch();
         branch.setType(BranchType.WAREHOUSE);

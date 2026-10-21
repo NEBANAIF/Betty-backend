@@ -22,6 +22,7 @@ import com.company.erp.supplier.Supplier;
 import com.company.erp.supplier.SupplierRepository;
 import com.company.erp.user.User;
 import com.company.erp.user.UserRepository;
+import com.company.erp.debt.DebtService;
 import com.company.erp.inventory.StockMutationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -58,6 +59,7 @@ public class PurchaseOrderService {
     private final BranchAccessService branchAccessService;
     private final StockMutationService stockMutationService;
     private final PurchaseReceiptRepository purchaseReceiptRepository;
+    private final DebtService debtService;
 
     @Transactional
     public PurchaseOrderResponse create(CreatePurchaseOrderRequest request) {
@@ -100,7 +102,30 @@ public class PurchaseOrderService {
         po.setTotal(total);
         po.refreshShipmentSummary(LocalDate.now());
 
-        return PurchaseOrderResponse.from(purchaseOrderRepository.save(po));
+        PurchasePaymentType paymentType = request.paymentType() != null ? request.paymentType() : PurchasePaymentType.PAID;
+        po.setPaymentType(paymentType);
+        if (paymentType == PurchasePaymentType.PARTIAL) {
+            BigDecimal paidNow = request.amountPaid();
+            if (paidNow == null || paidNow.signum() <= 0) {
+                throw new BusinessRuleViolationException("Enter how much you paid now for a partly paid purchase");
+            }
+            if (paidNow.compareTo(total) >= 0) {
+                throw new BusinessRuleViolationException(
+                        "The amount paid now must be less than the order total - choose Fully paid instead");
+            }
+            po.setAmountPaid(paidNow);
+        }
+        if (paymentType != PurchasePaymentType.PAID && request.creditDueDate() != null
+                && request.creditDueDate().isBefore(request.orderDate())) {
+            throw new BusinessRuleViolationException("The credit due date cannot be before the order date");
+        }
+
+        PurchaseOrder saved = purchaseOrderRepository.save(po);
+        if (paymentType != PurchasePaymentType.PAID) {
+            // Something is still owed to the supplier, so it goes on My Credits & Loans (same transaction).
+            debtService.createForPurchase(saved, request.creditDueDate(), creator);
+        }
+        return PurchaseOrderResponse.from(saved);
     }
 
     /**
@@ -180,6 +205,10 @@ public class PurchaseOrderService {
         if (po.isPartiallyReceived()) {
             throw new BusinessRuleViolationException(
                     "Cannot cancel a purchase order that has already received stock - it must run to completion");
+        }
+        if (po.getPaymentType() != PurchasePaymentType.PAID) {
+            // Refuses if repayments were already made, otherwise marks the credit cancelled.
+            debtService.cancelForPurchase(po);
         }
         po.setStatus(PurchaseOrderStatus.CANCELLED);
         return PurchaseOrderResponse.from(po);

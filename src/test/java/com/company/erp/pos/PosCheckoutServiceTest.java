@@ -64,6 +64,7 @@ class PosCheckoutServiceTest {
     @Mock private ProductBatchRepository productBatchRepository;
     @Mock private LoanService loanService;
     @Mock private NotificationService notificationService;
+    @Mock private com.company.erp.expense.ExpenseService expenseService;
     @Mock private BankRepository bankRepository;
     @Mock private com.company.erp.finance.FinancialTransactionService financialTransactionService;
 
@@ -80,7 +81,7 @@ class PosCheckoutServiceTest {
         service = new PosCheckoutService(branchAccessService, branchRepository, productRepository,
                 customerRepository, userRepository, stockMutationService, saleRepository,
                 paymentRepository, productBatchRepository, loanService, financialTransactionService,
-                new BankResolver(bankRepository), notificationService);
+                new BankResolver(bankRepository), notificationService, expenseService);
 
         branch = new Branch();
         branch.setName("Bole Store");

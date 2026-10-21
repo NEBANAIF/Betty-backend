@@ -17,6 +17,8 @@ public record ExpenseResponse(
         LocalDate expenseDate,
         String paymentMethod,
         String reference,
+        /** Sale number when this expense was entered for a specific sale at checkout, else null. */
+        String saleNumber,
         String createdByName,
         Instant createdAt
 ) {
@@ -24,6 +26,7 @@ public record ExpenseResponse(
         return new ExpenseResponse(
                 e.getId(), e.getBranch().getId(), e.getBranch().getName(), e.getCategory().name(),
                 e.getAmount(), e.getDescription(), e.getExpenseDate(), e.getPaymentMethod().name(),
-                e.getReference(), e.getCreatedBy().getName(), e.getCreatedAt());
+                e.getReference(), e.getSale() != null ? e.getSale().getSaleNumber() : null,
+                e.getCreatedBy().getName(), e.getCreatedAt());
     }
 }

@@ -9,6 +9,7 @@ import com.company.erp.common.exception.ForbiddenException;
 import com.company.erp.common.exception.ResourceNotFoundException;
 import com.company.erp.customer.Customer;
 import com.company.erp.customer.CustomerRepository;
+import com.company.erp.expense.ExpenseService;
 import com.company.erp.finance.FinancialReferenceType;
 import com.company.erp.finance.FinancialTransactionService;
 import com.company.erp.finance.FinancialTransactionType;
@@ -17,8 +18,10 @@ import com.company.erp.loan.LoanService;
 import com.company.erp.notification.NotificationService;
 import com.company.erp.notification.NotificationType;
 import com.company.erp.payment.Payment;
+import com.company.erp.payment.PaymentMethod;
 import com.company.erp.payment.PaymentRepository;
 import com.company.erp.payment.PaymentReferenceType;
+import com.company.erp.pos.dto.CheckoutExpenseRequest;
 import com.company.erp.pos.dto.CheckoutItemRequest;
 import com.company.erp.pos.dto.CheckoutRequest;
 import com.company.erp.product.Product;
@@ -60,6 +63,7 @@ import java.util.concurrent.ThreadLocalRandom;
  *     remainingAmount greater than 0 (customer presence already enforced
  *     below before this point is ever reached).
  * 11. Create stock history           -> done inside issueStock
+ * 11b. Sale expenses (optional) -> one Expense row per cost entered at checkout, linked to the sale
  * 12. Create financial transaction   -> financialTransactionService.record,
  *     once for SALE_REVENUE (the final discounted total), once for COGS
  *     (summed from every allocation across every item - never the selling
@@ -89,6 +93,7 @@ public class PosCheckoutService {
     private final FinancialTransactionService financialTransactionService;
     private final BankResolver bankResolver;
     private final NotificationService notificationService;
+    private final ExpenseService expenseService;
 
     @Transactional
     public SaleResponse checkout(CheckoutRequest request) {
@@ -104,6 +109,11 @@ public class PosCheckoutService {
             if (item.batchId() != null && !caller.hasPermission(Permission.POS_CHOOSE_BATCH)) {
                 throw new ForbiddenException("Your role is not allowed to choose the batch to sell from");
             }
+        }
+
+        boolean hasExpenses = request.expenses() != null && !request.expenses().isEmpty();
+        if (hasExpenses && !caller.hasPermission(Permission.EXPENSE_CREATE)) {
+            throw new ForbiddenException("Your role is not allowed to log expenses");
         }
 
         Branch branch = branchRepository.findById(request.branchId())
@@ -220,6 +230,13 @@ public class PosCheckoutService {
         if (request.amountPaid().compareTo(BigDecimal.ZERO) > 0) {
             financialTransactionService.record(branch, FinancialTransactionType.PAYMENT_IN, request.amountPaid(),
                     today, FinancialReferenceType.SALE, sale.getId());
+        }
+
+        if (hasExpenses) {
+            for (CheckoutExpenseRequest e : request.expenses()) {
+                expenseService.createForSale(branch, sale, cashier, e.category(), e.amount(), e.description().trim(),
+                        e.paymentMethod() != null ? e.paymentMethod() : PaymentMethod.CASH);
+            }
         }
 
         notificationService.record(NotificationType.SALE_COMPLETED, "New sale",

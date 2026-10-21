@@ -47,7 +47,11 @@ public record PurchaseOrderResponse(
         List<ShipmentStageResponse> stages,
         /** NOT_RECEIVED, PARTIALLY_RECEIVED or RECEIVED - what has physically been counted into stock. */
         String receivingStatus,
-        List<PurchaseReceiptResponse> receipts
+        List<PurchaseReceiptResponse> receipts,
+        /** PAID or CREDIT (CREDIT orders are listed on My Credits & Loans). */
+        String paymentType,
+        /** PARTIAL only: what was paid at order time (order currency); 0 otherwise. */
+        BigDecimal amountPaid
 ) {
     public static PurchaseOrderResponse from(PurchaseOrder po) {
         return from(po, LocalDate.now());
@@ -68,7 +72,7 @@ public record PurchaseOrderResponse(
                     po.getApprovedBy() != null ? po.getApprovedBy().getName() : null,
                     po.getItems().stream().map(PurchaseOrderItemResponse::from).toList(),
                     purchaseType, null, null, po.getBranch().getName(), null, null, null, null, null, null,
-                    null, null, null, null, null, null, 0, false, List.of(), receiving, receipts);
+                    null, null, null, null, null, null, 0, false, List.of(), receiving, receipts, po.getPaymentType().name(), po.getAmountPaid());
         }
 
         ShipmentCalculator.Summary summary = ShipmentCalculator.summarise(
@@ -90,6 +94,6 @@ public record PurchaseOrderResponse(
                 summary.actualArrivalDate(), summary.status().name(), summary.currentLocation(),
                 summary.currentCountry(), ShipmentCalculator.route(po.getStages()),
                 ShipmentCalculator.routeWithDates(po.getStages()), summary.totalTransitDays(),
-                summary.delayDays(), summary.delayed(), stages, receiving, receipts);
+                summary.delayDays(), summary.delayed(), stages, receiving, receipts, po.getPaymentType().name(), po.getAmountPaid());
     }
 }

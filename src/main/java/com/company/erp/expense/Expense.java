@@ -3,6 +3,7 @@ package com.company.erp.expense;
 import com.company.erp.branch.Branch;
 import com.company.erp.common.audit.BaseEntity;
 import com.company.erp.payment.PaymentMethod;
+import com.company.erp.sales.Sale;
 import com.company.erp.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,6 +48,11 @@ public class Expense extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false, length = 20)
     private PaymentMethod paymentMethod;
+
+    /** Set when the expense was entered at POS checkout for one specific sale; null for general expenses. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sale_id")
+    private Sale sale;
 
     /** Free-text receipt/transaction reference, optional. */
     private String reference;

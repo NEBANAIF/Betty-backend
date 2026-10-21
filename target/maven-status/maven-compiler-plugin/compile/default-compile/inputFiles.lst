@@ -68,6 +68,19 @@ C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\compan
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\dashboard\DashboardService.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\dashboard\dto\DashboardSummaryResponse.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\dashboard\dto\LowStockAlertResponse.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\Debt.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\DebtController.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\DebtPayment.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\DebtPaymentRepository.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\DebtRepository.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\DebtService.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\DebtStatus.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\DebtType.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\dto\DebtPaymentRequest.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\dto\DebtPaymentResponse.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\dto\DebtRequest.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\dto\DebtResponse.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\debt\dto\DebtSummaryResponse.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\ErpApplication.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\expense\dto\ExpenseRequest.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\expense\dto\ExpenseResponse.java
@@ -133,6 +146,7 @@ C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\compan
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\payment\PaymentQueryService.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\payment\PaymentReferenceType.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\payment\PaymentRepository.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\pos\dto\CheckoutExpenseRequest.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\pos\dto\CheckoutItemRequest.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\pos\dto\CheckoutRequest.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\pos\PosCheckoutService.java
@@ -173,6 +187,7 @@ C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\compan
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\purchase\PurchaseOrderRepository.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\purchase\PurchaseOrderService.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\purchase\PurchaseOrderStatus.java
+C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\purchase\PurchasePaymentType.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\purchase\PurchaseReceipt.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\purchase\PurchaseReceiptLine.java
 C:\Users\user\Documents\betty cosmo\erp-app\erp-backend\src\main\java\com\company\erp\purchase\PurchaseReceiptRepository.java

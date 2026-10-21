@@ -25,6 +25,8 @@ import java.util.UUID;
  * - bankId is the registered bank a BANK payment went into (chosen from the POS dropdown);
  *   accountReference is then just the transfer/receipt reference the cashier typed. bankName
  *   is only for older clients that type a bank name instead of choosing one.
+ * - expenses (optional): costs of this one sale (labour, delivery...), saved as Expense rows linked to the sale.
+ *   They do not change the sale total or what the customer pays. Needs EXPENSE_CREATE.
  * - loanDueDate only matters when a loan gets created (remainingAmount > 0);
  *   if omitted, the loan defaults to a 30-day due date. Ignored entirely
  *   when the sale is paid in full.
@@ -39,6 +41,14 @@ public record CheckoutRequest(
         String bankName,
         String accountReference,
         LocalDate loanDueDate,
-        UUID bankId
+        UUID bankId,
+        @Valid List<CheckoutExpenseRequest> expenses
 ) {
+    /** Keeps the older 10-argument form (no sale expenses) working. */
+    public CheckoutRequest(UUID branchId, UUID customerId, List<CheckoutItemRequest> items, BigDecimal discountAmount,
+                           PaymentMethod paymentMethod, BigDecimal amountPaid, String bankName,
+                           String accountReference, LocalDate loanDueDate, UUID bankId) {
+        this(branchId, customerId, items, discountAmount, paymentMethod, amountPaid, bankName,
+                accountReference, loanDueDate, bankId, null);
+    }
 }

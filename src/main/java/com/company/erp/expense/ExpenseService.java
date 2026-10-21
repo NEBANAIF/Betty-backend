@@ -9,6 +9,8 @@ import com.company.erp.expense.dto.ExpenseResponse;
 import com.company.erp.finance.FinancialReferenceType;
 import com.company.erp.finance.FinancialTransactionService;
 import com.company.erp.finance.FinancialTransactionType;
+import com.company.erp.payment.PaymentMethod;
+import com.company.erp.sales.Sale;
 import com.company.erp.security.BranchAccessService;
 import com.company.erp.user.User;
 import com.company.erp.user.UserRepository;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -52,6 +55,29 @@ public class ExpenseService {
                 request.expenseDate(), FinancialReferenceType.EXPENSE, expense.getId());
 
         return ExpenseResponse.from(expense);
+    }
+
+    /**
+     * An expense entered at POS checkout for one specific sale. Runs inside the checkout's transaction
+     * (the caller has already checked branch access and EXPENSE_CREATE), so if the sale fails, this
+     * expense is rolled back with it. The sale number is stored as the reference.
+     */
+    public Expense createForSale(Branch branch, Sale sale, User creator, ExpenseCategory category,
+                                 BigDecimal amount, String description, PaymentMethod paymentMethod) {
+        Expense expense = new Expense();
+        expense.setBranch(branch);
+        expense.setSale(sale);
+        expense.setCategory(category);
+        expense.setAmount(amount);
+        expense.setDescription(description);
+        expense.setExpenseDate(LocalDate.now());
+        expense.setPaymentMethod(paymentMethod);
+        expense.setReference(sale.getSaleNumber());
+        expense.setCreatedBy(creator);
+        expense = expenseRepository.save(expense);
+        financialTransactionService.record(branch, FinancialTransactionType.EXPENSE, amount,
+                expense.getExpenseDate(), FinancialReferenceType.EXPENSE, expense.getId());
+        return expense;
     }
 
     @Transactional(readOnly = true)

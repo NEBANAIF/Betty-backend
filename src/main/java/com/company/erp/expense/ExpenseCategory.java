@@ -4,6 +4,7 @@ public enum ExpenseCategory {
     RENT,
     ELECTRICITY,
     SALARIES,
+    LABOR,
     TRANSPORT,
     INTERNET,
     MAINTENANCE,

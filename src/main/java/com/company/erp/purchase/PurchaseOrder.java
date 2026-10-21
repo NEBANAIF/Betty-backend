@@ -65,6 +65,15 @@ public class PurchaseOrder extends BaseEntity {
     @Column(nullable = false, precision = 14, scale = 2)
     private BigDecimal total;
 
+    /** PAID = supplier paid in full; CREDIT = we owe the supplier (see My Credits & Loans). Existing orders are PAID. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_type", nullable = false, length = 10)
+    private PurchasePaymentType paymentType = PurchasePaymentType.PAID;
+
+    /** PARTIAL only: what was paid to the supplier at order time, in the order's own currency. 0 otherwise. */
+    @Column(name = "amount_paid", nullable = false, precision = 14, scale = 2)
+    private BigDecimal amountPaid = BigDecimal.ZERO;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
