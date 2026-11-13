@@ -38,12 +38,16 @@ import com.company.erp.stockhistory.StockReferenceType;
 import com.company.erp.user.Permission;
 import com.company.erp.user.User;
 import com.company.erp.user.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -95,8 +99,31 @@ public class PosCheckoutService {
     private final NotificationService notificationService;
     private final ExpenseService expenseService;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    /**
+     * How one checkout is stamped. A live POS sale is "today, announced to the bell, numbered automatically".
+     * An imported sale carries its own invoice number and its real (past) date, and is not announced
+     * one notification per row.
+     */
+    public record SaleContext(String saleNumber, LocalDate date, boolean announce) {
+        public static SaleContext live() {
+            return new SaleContext(null, LocalDate.now(), true);
+        }
+
+        public static SaleContext imported(String saleNumber, LocalDate date) {
+            return new SaleContext(saleNumber, date, false);
+        }
+    }
+
     @Transactional
     public SaleResponse checkout(CheckoutRequest request) {
+        return checkout(request, SaleContext.live());
+    }
+
+    @Transactional
+    public SaleResponse checkout(CheckoutRequest request, SaleContext context) {
         branchAccessService.assertCanWriteToBranch(request.branchId());
 
         // What this caller's role may do on the sale itself (set on the Roles page).
@@ -127,7 +154,7 @@ public class PosCheckoutService {
         }
 
         Sale sale = new Sale();
-        sale.setSaleNumber(generateSaleNumber());
+        sale.setSaleNumber(context.saleNumber() != null ? context.saleNumber() : generateSaleNumber());
         sale.setBranch(branch);
         sale.setCustomer(customer);
         sale.setCreatedBy(cashier);
@@ -222,7 +249,7 @@ public class PosCheckoutService {
             loanService.createFromSale(sale, request.loanDueDate());
         }
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = context.date();
         financialTransactionService.record(branch, FinancialTransactionType.SALE_REVENUE, total, today,
                 FinancialReferenceType.SALE, sale.getId());
         financialTransactionService.record(branch, FinancialTransactionType.COGS, totalCogs, today,
@@ -239,6 +266,13 @@ public class PosCheckoutService {
             }
         }
 
+        if (!today.equals(LocalDate.now())) {
+            backdate(sale, today);
+        }
+        if (!context.announce()) {
+            return SaleResponse.from(sale);
+        }
+
         notificationService.record(NotificationType.SALE_COMPLETED, "New sale",
                 sale.getSaleNumber() + " · " + request.items().size()
                         + (request.items().size() == 1 ? " item" : " items")
@@ -247,6 +281,26 @@ public class PosCheckoutService {
                 branch, cashier, "SALE", sale.getId());
 
         return SaleResponse.from(sale);
+    }
+
+    /**
+     * A sale entered later than it happened (an import) must show up on its real day in sales history,
+     * reports, the payment list, the loan and stock history. createdAt is write-once in JPA, so the dates
+     * are set with direct updates after the rows exist.
+     */
+    private void backdate(Sale sale, LocalDate day) {
+        Instant at = day.atTime(12, 0).atZone(ZoneId.systemDefault()).toInstant();
+        entityManager.flush();
+        entityManager.createNativeQuery("update sales set created_at = :t, updated_at = :t where id = :id")
+                .setParameter("t", at).setParameter("id", sale.getId()).executeUpdate();
+        entityManager.createNativeQuery(
+                        "update payments set created_at = :t, updated_at = :t where reference_type = 'SALE' and reference_id = :id")
+                .setParameter("t", at).setParameter("id", sale.getId()).executeUpdate();
+        entityManager.createNativeQuery("update loans set created_at = :t, updated_at = :t where sale_id = :id")
+                .setParameter("t", at).setParameter("id", sale.getId()).executeUpdate();
+        entityManager.createNativeQuery(
+                        "update stock_history set occurred_at = :t where reference_type = 'SALE' and reference_id = :id")
+                .setParameter("t", at).setParameter("id", sale.getId()).executeUpdate();
     }
 
     private PaymentStatus derivePaymentStatus(BigDecimal amountPaid, BigDecimal total) {

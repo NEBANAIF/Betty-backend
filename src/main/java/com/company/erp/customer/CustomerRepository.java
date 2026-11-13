@@ -15,6 +15,8 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID>, JpaSp
 
     List<Customer> findByActiveTrue();
 
+    java.util.Optional<Customer> findFirstByNameIgnoreCase(String name);
+
     /**
      * Built as a Specification so an absent search term adds no predicate at
      * all (see SearchSpecs for why the old "(:search IS NULL OR ...)" JPQL

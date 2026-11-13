@@ -1,0 +1,226 @@
+# English message (with {1}, {2}... for the variable parts) <TAB> Amharic. Used when the request has "Accept-Language: am".
+# Add a line here to translate another backend message; no code change is needed.
+"bullets" must be a list of short sentences.	“bullets” የአጫጭር ዓረፍተ ነገሮች ዝርዝር መሆን አለበት።
+"{1}" can be at most {2} characters long.	“{1}” ቢበዛ {2} ፊደላት ርዝመት ሊኖረው ይችላል።
+"{1}" is not an available choice.	“{1}” ከሚገኙ ምርጫዎች አንዱ አይደለም።
+"{1}" is not an available font.	“{1}” የሚገኝ ፊደል አይደለም።
+"{1}" must be a colour like #7a7d55.	“{1}” እንደ #7a7d55 ያለ ቀለም መሆን አለበት።
+"{1}" must be text.	“{1}” ጽሑፍ መሆን አለበት።
+'from' date must not be after 'to' date	“ከ” ቀን ከ“እስከ” ቀን በኋላ መሆን የለበትም
+'{1}' isn't a number	‘{1}’ ቁጥር አይደለም
+'{1}' isn't a whole number	‘{1}’ ሙሉ ቁጥር አይደለም
+A branch is required for this operation	ለዚህ ሥራ ቅርንጫፍ ያስፈልጋል
+A branch named '{1}' already exists	‘{1}’ የሚባል ቅርንጫፍ አስቀድሞ አለ
+A customer is required whenever a sale is not paid in full (credit/partial balance)	ሽያጭ ሙሉ በሙሉ ባልተከፈለ ጊዜ ሁሉ (ዱቤ/ቀሪ ሂሳብ) ደንበኛ ያስፈልጋል
+A global purchase must be received into a warehouse - choose a warehouse as the destination	ዓለም አቀፍ ግዢ በመጋዘን መቀበል አለበት — መጋዘን እንደ መድረሻ ይምረጡ
+A loan cannot be created for a fully paid sale	ሙሉ በሙሉ ለተከፈለ ሽያጭ ብድር ሊፈጠር አይችልም
+A loan cannot be created for a sale with no customer	ደንበኛ ለሌለው ሽያጭ ብድር ሊፈጠር አይችልም
+A product with SKU '{1}' already exists	SKU ‘{1}’ ያለው ምርት አስቀድሞ አለ
+A purchase with nothing left to pay cannot be bought on credit	ምንም የሚከፈል ቀሪ የሌለው ግዢ በዱቤ ሊገዛ አይችልም
+A reason is required to void a sale	ሽያጭ ለመሻር ምክንያት ያስፈልጋል
+A role is required	ሚና ያስፈልጋል
+A role named "{1}" already exists	“{1}” የሚባል ሚና አስቀድሞ አለ
+A specific branch must be provided for this scope	ለዚህ ወሰን የተወሰነ ቅርንጫፍ መቅረብ አለበት
+A supplier named '{1}' already exists	‘{1}’ የሚባል አቅራቢ አስቀድሞ አለ
+A user with email {1} already exists	ኢሜይል {1} ያለው ተጠቃሚ አስቀድሞ አለ
+Allocation {1} does not belong to sale {2}	ድልድል {1} የሽያጭ {2} አይደለም
+Amount paid cannot exceed the sale total	የተከፈለው መጠን ከሽያጩ ድምር መብለጥ አይችልም
+At most {1} bullets are allowed.	ቢበዛ {1} ነጥቦች ይፈቀዳሉ።
+Batch number {1} has since been used by another batch	የባች ቁጥር {1} ከዚያ በኋላ በሌላ ባች ጥቅም ላይ ውሏል
+Batch number {1} is already used by another batch	የባች ቁጥር {1} አስቀድሞ በሌላ ባች ጥቅም ላይ ውሏል
+Batch {1} already has an edit waiting for approval - approve or discard it first	ባች {1} ፈቃድ የሚጠብቅ ማስተካከያ አለው — መጀመሪያ ያጽድቁት ወይም ይሰርዙት
+Batch {1} has only {2} left but {3} were requested	ባች {1} {2} ብቻ ቀርቶታል ነገር ግን {3} ተጠይቋል
+Batch {1} is not a batch of this product at this branch	ባች {1} የዚህ ምርት በዚህ ቅርንጫፍ ባች አይደለም
+Batch {1} only has {2} left	ባች {1} {2} ብቻ ቀርቶታል
+Branch '{1}' doesn't exist - check the name/code against Branches	ቅርንጫፍ ‘{1}’ የለም — ስሙን/ኮዱን ከቅርንጫፎች ገጽ ጋር ያረጋግጡ
+Branch code '{1}' is already in use	የቅርንጫፍ ኮድ ‘{1}’ አስቀድሞ ጥቅም ላይ ውሏል
+Cannot cancel a purchase order that has already received stock - it must run to completion	ክምችት የተቀበለን የግዢ ትዕዛዝ መሰረዝ አይቻልም — እስከ መጨረሻው መቀጠል አለበት
+Cannot cancel a purchase order that is already {1}	አስቀድሞ በ“{1}” ሁኔታ ላይ ያለን የግዢ ትዕዛዝ መሰረዝ አይቻልም
+Cannot cancel {1}: {2} has already been repaid on its credit (My Credits & Loans)	{1}ን መሰረዝ አይቻልም፦ በዱቤው ላይ {2} አስቀድሞ ተመልሷል (የእኔ ዱቤዎችና ብድሮች)
+Cannot change the role of the last active SUPER_ADMIN	የመጨረሻውን ንቁ ዋና አስተዳዳሪ (SUPER_ADMIN) ሚና መቀየር አይቻልም
+Cannot deactivate the last active SUPER_ADMIN	የመጨረሻውን ንቁ ዋና አስተዳዳሪ (SUPER_ADMIN) ማቦዘን አይቻልም
+Cannot receive {1} units for product {2} - only {3} remain outstanding on this order	ለምርት {2} {1} መለኪያዎችን መቀበል አይቻልም — በዚህ ትዕዛዝ ላይ {3} ብቻ ይቀራሉ
+Cannot restore stock: batch {1} no longer exists	ክምችት መመለስ አይቻልም፦ ባች {1} ከዚህ በኋላ የለም
+Cannot return {1} units from batch {2} - only {3} of the original {4} remain returnable	ከባች {2} {1} መለኪያዎችን መመለስ አይቻልም — ከመጀመሪያው {4} ውስጥ {3} ብቻ ተመላሽ ሊሆኑ ይችላሉ
+Cannot return {1} units of {2} - only {3} of the {4} received units remain returnable	{2} {1} መለኪያዎችን መመለስ አይቻልም — ከተቀበሉት {4} መለኪያዎች ውስጥ {3} ብቻ ተመላሽ ሊሆኑ ይችላሉ
+Cannot update the shipment of a cancelled purchase order	የተሰረዘ የግዢ ትዕዛዝ ጭነት ማዘመን አይቻልም
+Cannot {1} a purchase order in status {2} (expected {3})	በ{2} ሁኔታ ላይ ያለን የግዢ ትዕዛዝ {1} አይቻልም ({3} ይጠበቃል)
+Choose a file to import	ለማስመጣት ፋይል ይምረጡ
+Choose a shipping method for a global purchase	ለዓለም አቀፍ ግዢ የመላኪያ ዘዴ ይምረጡ
+Choose the bank this payment went to	ይህ ክፍያ የገባበትን ባንክ ይምረጡ
+Choose whether this role works at a store or a warehouse	ይህ ሚና በመደብር ወይስ በመጋዘን እንደሚሠራ ይምረጡ
+Choose why the stock is being removed	ክምችቱ ለምን እንደሚወገድ ይምረጡ
+Cost Price is required when Initial Stock is greater than 0	የመጀመሪያ ክምችት ከ0 በላይ ሲሆን የግዢ ዋጋ ያስፈልጋል
+Couldn't read that file - make sure it's the .xlsx template, not edited into another format	ያንን ፋይል ማንበብ አልተቻለም — ወደ ሌላ ቅርጸት ያልተቀየረ .xlsx ቅጽ መሆኑን ያረጋግጡ
+Discount cannot exceed the sale subtotal	ቅናሹ ከሽያጩ ንዑስ ድምር መብለጥ አይችልም
+Each bullet can be at most {1} characters long.	እያንዳንዱ ነጥብ ቢበዛ {1} ፊደላት ርዝመት ሊኖረው ይችላል።
+Enter a selling price for '{1}'	ለ‘{1}’ የመሸጫ ዋጋ ያስገቡ
+Enter how much you paid now for a partly paid purchase	በከፊል ለተከፈለ ግዢ አሁን ምን ያህል እንደከፈሉ ያስገቡ
+Enter the expected arrival date for a global purchase	ለዓለም አቀፍ ግዢ የሚጠበቀውን የመድረሻ ቀን ያስገቡ
+Enter the purchase currency for a global purchase	ለዓለም አቀፍ ግዢ የግዢውን ገንዘብ ያስገቡ
+Enter the {1} for a global purchase	ለዓለም አቀፍ ግዢ {1} ያስገቡ
+Enter what one unit cost	አንድ መለኪያ ምን ያህል እንደወጣ ያስገቡ
+Initial Stock can't be negative	የመጀመሪያ ክምችት አሉታዊ ሊሆን አይችልም
+Insufficient available stock: requested {1} but only {2} available	በቂ ያልሆነ ክምችት፦ {1} ተጠይቋል ነገር ግን {2} ብቻ አለ
+Insufficient stock: requested {1} but only {2} available	በቂ ያልሆነ ክምችት፦ {1} ተጠይቋል ነገር ግን {2} ብቻ አለ
+Issued quantity must be positive	የሚሰጠው ብዛት አዎንታዊ መሆን አለበት
+Item {1} does not belong to purchase order {2}	ዕቃ {1} የግዢ ትዕዛዝ {2} አይደለም
+Loan for sale {1} already has a payment recorded - reverse that payment before voiding the sale	የሽያጭ {1} ብድር ክፍያ አስቀድሞ ተመዝግቦበታል — ሽያጩን ከመሻርዎ በፊት ያንን ክፍያ ይቀልብሱ
+Loan for sale {1} is already fully paid	የሽያጭ {1} ብድር አስቀድሞ ሙሉ በሙሉ ተከፍሏል
+No data rows found - fill in the template below the header row and try again	ምንም የውሂብ ረድፎች አልተገኙም — ከራስጌ ረድፉ በታች ቅጹን ሞልተው እንደገና ይሞክሩ
+No user with email {1}	ኢሜይል {1} ያለው ተጠቃሚ የለም
+Only a PENDING or APPROVED transfer can be rejected - stock has already moved	ውድቅ ሊደረግ የሚችለው በመጠባበቅ ላይ (PENDING) ወይም የጸደቀ (APPROVED) ዝውውር ብቻ ነው — ክምችቱ አስቀድሞ ተንቀሳቅሷል
+Only a Super Admin can create or change Super Admin users	ዋና አስተዳዳሪ ተጠቃሚዎችን መፍጠር ወይም መቀየር የሚችለው ዋና አስተዳዳሪ ብቻ ነው
+Only a Super Admin can create or change roles	ሚናዎችን መፍጠር ወይም መቀየር የሚችለው ዋና አስተዳዳሪ ብቻ ነው
+Only global purchases have a shipment to update	ጭነት የሚኖራቸው ዓለም አቀፍ ግዢዎች ብቻ ናቸው
+Only the person who entered this, or someone who can approve stock changes, can discard it	ይህን የሚሰርዘው ያስገባው ሰው ወይም የክምችት ለውጦችን ማጽደቅ የሚችል ሰው ብቻ ነው
+Only {1} of {2} available at {3}	በ{3} ከ{2} ውስጥ {1} ብቻ ይገኛል
+Payment of {1} exceeds the remaining balance of {2}	የ{1} ክፍያ ከቀሪው ሂሳብ {2} ይበልጣል
+Payment of {1} is more than the {2} still owed	የ{1} ክፍያ አሁንም ከሚከፈለው {2} ይበልጣል
+Pick the batch to edit	የሚስተካከለውን ባች ይምረጡ
+Purchase order item {1} does not belong to this order	የግዢ ትዕዛዝ ዕቃ {1} የዚህ ትዕዛዝ አይደለም
+Purchase order must be APPROVED before it can be received (current status: {1})	የግዢ ትዕዛዝ ከመቀበሉ በፊት መጽደቅ (APPROVED) አለበት (አሁን ያለው ሁኔታ፦ {1})
+Purchase order {1} is {2} - only a RECEIVED or PARTIALLY_RECEIVED order has stock to return	የግዢ ትዕዛዝ {1} {2} ነው — የሚመለስ ክምችት ያለው የተቀበለ (RECEIVED) ወይም በከፊል የተቀበለ (PARTIALLY_RECEIVED) ትዕዛዝ ብቻ ነው
+Received quantity must be positive	የተቀበለው ብዛት አዎንታዊ መሆን አለበት
+Restocked quantity must be positive	ወደ ክምችት የተመለሰው ብዛት አዎንታዊ መሆን አለበት
+Role {1} requires a {2} branch, but {3} is a {4} branch	ሚና {1} {2} ቅርንጫፍ ይፈልጋል፣ ነገር ግን {3} {4} ቅርንጫፍ ነው
+Role {1} requires an assigned branch	ሚና {1} የተመደበ ቅርንጫፍ ይፈልጋል
+SKU '{1}' already belongs to '{2}'. Use the same name to add stock for another branch, or a different SKU for a different product	SKU ‘{1}’ አስቀድሞ የ‘{2}’ ነው። ለሌላ ቅርንጫፍ ክምችት ለመጨመር ተመሳሳይ ስም ይጠቀሙ፣ ወይም ለተለየ ምርት የተለየ SKU ይጠቀሙ
+SKU '{1}' already exists and this row has no Initial Stock - nothing to add	SKU ‘{1}’ አስቀድሞ አለ እና ይህ ረድፍ የመጀመሪያ ክምችት የለውም — የሚጨመር ነገር የለም
+SKU '{1}' belongs to a deleted product - row skipped	SKU ‘{1}’ የተሰረዘ ምርት ነው — ረድፉ ተዘሏል
+SUPER_ADMIN users must not be assigned to a branch	ዋና አስተዳዳሪ (SUPER_ADMIN) ተጠቃሚዎች ለቅርንጫፍ መመደብ የለባቸውም
+Sale {1} already has a loan	ሽያጭ {1} አስቀድሞ ብድር አለው
+Sale {1} has an outstanding balance but no loan record	ሽያጭ {1} ያልተከፈለ ቀሪ ሂሳብ አለው ነገር ግን የብድር መዝገብ የለውም
+Sale {1} is already voided	ሽያጭ {1} አስቀድሞ ተሽሯል
+Source and destination branch must be different	የምንጭና የመድረሻ ቅርንጫፍ የተለያዩ መሆን አለባቸው
+Stock history reconciliation mismatch for product {1}	ለምርት {1} የክምችት ታሪክ ማስታረቅ አለመመጣጠን
+Text size must be between 85% and 130%.	የጽሑፍ መጠን በ85% እና 130% መካከል መሆን አለበት።
+That batch isn't {1} at {2}	ያ ባች በ{2} የ{1} አይደለም
+The Super Admin role always has full access and cannot be edited	የዋና አስተዳዳሪ ሚና ሁልጊዜ ሙሉ መዳረሻ አለው እና ሊስተካከል አይችልም
+The amount paid now must be less than the order total - choose Fully paid instead	አሁን የተከፈለው መጠን ከትዕዛዙ ድምር ያነሰ መሆን አለበት — በምትኩ “ሙሉ በሙሉ የተከፈለ” ይምረጡ
+The arrival month must be between 1 and 12	የመድረሻ ወር ከ1 እስከ 12 መካከል መሆን አለበት
+The bank "{1}" is not active	ባንክ “{1}” ንቁ አይደለም
+The built-in role {1} is missing	አብሮ የተሰራው ሚና {1} ጠፍቷል
+The built-in roles cannot be deleted	አብሮ የተሰሩ ሚናዎች ሊሰረዙ አይችሉም
+The credit due date cannot be before the order date	የዱቤው የመክፈያ ቀን ከትዕዛዙ ቀን በፊት መሆን አይችልም
+The currency and exchange rate cannot change after stock has been received - it was already costed with them	ክምችት ከተቀበለ በኋላ ገንዘቡና የምንዛሬ ተመኑ ሊቀየሩ አይችሉም — ክምችቱ ቀድሞ በእነሱ ወጪ ተሰልቷል
+The currency must be a code such as USD, EUR or CNY	ገንዘቡ እንደ USD፣ EUR ወይም CNY ያለ ኮድ መሆን አለበት
+The due date cannot be before the start date	የመክፈያ ቀኑ ከመጀመሪያው ቀን በፊት መሆን አይችልም
+The expected arrival date cannot be before the order date	የሚጠበቀው የመድረሻ ቀን ከትዕዛዙ ቀን በፊት መሆን አይችልም
+The login page settings are not valid.	የመግቢያ ገጽ ቅንብሮች ትክክል አይደሉም።
+The manager must already be assigned to this branch with the matching manager role	ሥራ አስኪያጁ አስቀድሞ በሚዛመደው የሥራ አስኪያጅ ሚና ለዚህ ቅርንጫፍ መመደብ አለበት
+The origin and destination country are the same - choose Local for a purchase inside one country	የመነሻና የመድረሻ አገር ተመሳሳይ ናቸው — በአንድ አገር ውስጥ ለሚደረግ ግዢ “የአገር ውስጥ” ይምረጡ
+The payment date cannot be in the future	የክፍያ ቀኑ ወደፊት መሆን አይችልም
+The route must end in the destination country ({1})	መስመሩ በመድረሻ አገር ({1}) ማብቃት አለበት
+The route must start in the origin country ({1})	መስመሩ በመነሻ አገር ({1}) መጀመር አለበት
+The route needs at least two stops: where the goods start and where they end up	መስመሩ ቢያንስ ሁለት ማቆሚያዎች ያስፈልጉታል፦ ዕቃው የሚጀምርበትና የሚደርስበት
+The theme is not valid.	መልኩ ትክክል አይደለም።
+The total to repay cannot be less than the {1} already paid	የሚመለሰው ጠቅላላ መጠን አስቀድሞ ከተከፈለው {1} ያነሰ መሆን አይችልም
+This credit was cancelled - its purchase order was cancelled	ይህ ዱቤ ተሰርዟል — የግዢ ትዕዛዙ ተሰርዟል
+This credit was cancelled and can no longer be edited	ይህ ዱቤ ተሰርዟል እና ከዚህ በኋላ ሊስተካከል አይችልም
+This debt is already fully paid	ይህ ዕዳ አስቀድሞ ሙሉ በሙሉ ተከፍሏል
+This delivery has already been received - the stock was not added a second time	ይህ ርክክብ አስቀድሞ ተቀብሏል — ክምችቱ ለሁለተኛ ጊዜ አልተጨመረም
+This has already been approved	ይህ አስቀድሞ ጸድቋል
+This is already on hold	ይህ አስቀድሞ በእግድ ላይ ነው
+This product has no stock on hand in the selected branches, so there's no batch cost to correct.	ይህ ምርት በተመረጡት ቅርንጫፎች በእጅ ክምችት ስለሌለው የሚስተካከል የባች ዋጋ የለም።
+This role is assigned to {1} user(s). Move them to another role before deleting it.	ይህ ሚና ለ{1} ተጠቃሚ(ዎች) ተመድቧል። ከመሰረዝዎ በፊት ወደ ሌላ ሚና ያዛውሯቸው።
+This sale has a payment recorded against its loan - reverse or refund that payment first, then void the sale	በዚህ ሽያጭ ብድር ላይ ክፍያ ተመዝግቧል — መጀመሪያ ያንን ክፍያ ይቀልብሱ ወይም ይመልሱ፣ ከዚያ ሽያጩን ይሽሩ
+This stock change is approved or rejected from the Batches page	ይህ የክምችት ለውጥ የሚጸድቀው ወይም ውድቅ የሚደረገው ከባቾች ገጽ ነው
+This stock change was already {1}	ይህ የክምችት ለውጥ አስቀድሞ {1} ነበር
+This transfer does not involve a branch you have access to	ይህ ዝውውር መዳረሻ ያለዎትን ቅርንጫፍ አያካትትም
+Transfer {1} is {2}, expected {3}	ዝውውር {1} {2} ነው፣ {3} ይጠበቃል
+Unknown branch type: {1}	የማይታወቅ የቅርንጫፍ ዓይነት፦ {1}
+Unknown login page option "{1}".	የማይታወቅ የመግቢያ ገጽ አማራጭ “{1}”።
+Unknown permission: {1}	የማይታወቅ ፈቃድ፦ {1}
+Unknown shipment status "{1}" (use NOT_SHIPPED, IN_TRANSIT, ARRIVED or DELAYED)	የማይታወቅ የጭነት ሁኔታ “{1}” (NOT_SHIPPED፣ IN_TRANSIT፣ ARRIVED ወይም DELAYED ይጠቀሙ)
+Unknown theme option "{1}".	የማይታወቅ የመልክ አማራጭ “{1}”።
+User has no assigned branch	ተጠቃሚው የተመደበ ቅርንጫፍ የለውም
+Write a short reason for removing this stock	ይህን ክምችት ለማስወገድ አጭር ምክንያት ይጻፉ
+Your role is not allowed to choose the batch to sell from	ሚናዎ የሚሸጥበትን ባች እንዲመርጡ አይፈቅድም
+Your role is not allowed to edit batches	ሚናዎ ባቾችን እንዲያርሙ አይፈቅድም
+Your role is not allowed to give a discount	ሚናዎ ቅናሽ እንዲሰጡ አይፈቅድም
+Your role is not allowed to log expenses	ሚናዎ ወጪዎችን እንዲመዘግቡ አይፈቅድም
+costPrice is required when increasing stock via adjustment	ክምችትን በማስተካከያ ሲጨምሩ የግዢ ዋጋ (costPrice) ያስፈልጋል
+quantityNeeded must be positive	የሚያስፈልገው ብዛት አዎንታዊ መሆን አለበት
+{1} is required	{1} ያስፈልጋል
+{1}: cannot be marked as reached while an earlier stop is still pending	{1}፦ ቀደም ያለ ማቆሚያ አሁንም በመጠባበቅ ላይ ሳለ እንደደረሰ ምልክት ሊደረግ አይችልም
+{1}: dates for a stop the goods have already reached cannot be in the future	{1}፦ ዕቃው ለደረሰበት ማቆሚያ ቀኖች ወደፊት መሆን አይችሉም
+{1}: enter the arrival date	{1}፦ የመድረሻ ቀኑን ያስገቡ
+{1}: enter the departure date	{1}፦ የመነሻ ቀኑን ያስገቡ
+{1}: has a departure date, so its status must be Departed	{1}፦ የመነሻ ቀን አለው፣ ስለዚህ ሁኔታው “ተነስቷል” መሆን አለበት
+{1}: the arrival date is before the goods left the previous stop	{1}፦ የመድረሻ ቀኑ ዕቃው ካለፈው ማቆሚያ ከወጣበት በፊት ነው
+{1}: the departure date is before the arrival date	{1}፦ የመነሻ ቀኑ ከመድረሻ ቀኑ በፊት ነው
+{1}: the final stop is the destination - it cannot be marked as departed	{1}፦ የመጨረሻው ማቆሚያ መድረሻው ነው — እንደተነሳ ምልክት ሊደረግ አይችልም
+{1}: the goods cannot be here before they left {2}	{1}፦ ዕቃው {2} ከመውጣቱ በፊት እዚህ ሊሆን አይችልም
+Invoice No '{1}' already exists - nothing was recorded for it	የደረሰኝ ቁጥር ‘{1}’ አስቀድሞ አለ — ለእሱ ምንም አልተመዘገበም
+The date is missing	ቀኑ ጠፍቷል
+'{1}' isn't a date - write it like 2025-03-04	‘{1}’ ቀን አይደለም — እንደ 2025-03-04 ይጻፉት
+The date cannot be in the future	ቀኑ ወደፊት መሆን አይችልም
+Branch is missing - write it in the Branch column or choose one on the import screen	ቅርንጫፍ ጠፍቷል — በቅርንጫፍ አምድ ውስጥ ይጻፉት ወይም በማስመጫ ማያ ገጹ ላይ አንዱን ይምረጡ
+Product '{1}' not found - it must already exist under Inventory > Products	ምርት ‘{1}’ አልተገኘም — አስቀድሞ በክምችት > ምርቶች ውስጥ መኖር አለበት
+Product is missing	ምርት ጠፍቷል
+Quantity must be a whole number above 0	ብዛቱ ከ0 በላይ ሙሉ ቁጥር መሆን አለበት
+Unit Price must be a number, 0 or more	የአንዱ ዋጋ ቁጥር፣ 0 ወይም ከዚያ በላይ መሆን አለበት
+Discount must be a number, 0 or more	ቅናሹ ቁጥር፣ 0 ወይም ከዚያ በላይ መሆን አለበት
+Amount Paid must be a number, 0 or more	የተከፈለው መጠን ቁጥር፣ 0 ወይም ከዚያ በላይ መሆን አለበት
+Payment Method must be Cash or Bank (or left blank for Cash)	የክፍያ ዘዴ ጥሬ ገንዘብ (Cash) ወይም ባንክ (Bank) መሆን አለበት (ወይም ለጥሬ ገንዘብ ባዶ ይተዉ)
+Choose the bank used for Bank payments on the import screen	በማስመጫ ማያ ገጹ ላይ ለባንክ ክፍያዎች የሚውለውን ባንክ ይምረጡ
+Row {1}: {2}	ረድፍ {1}፦ {2}
+Unexpected error: {1}	ያልተጠበቀ ስህተት፦ {1}
+One or more fields are invalid	አንድ ወይም ከዚያ በላይ መስኮች ልክ አይደሉም
+You do not have permission to perform this action	ይህን ድርጊት የማከናወን ፈቃድ የለዎትም
+Invalid email or password	ኢሜይል ወይም የይለፍ ቃል ልክ አይደለም
+An unexpected error occurred	ያልተጠበቀ ስህተት ተከስቷል
+{1} not found: {2}	{1} አልተገኘም፦ {2}
+must not be blank	ባዶ መሆን የለበትም
+must not be null	ባዶ (null) መሆን የለበትም
+must not be empty	ባዶ መሆን የለበትም
+must be greater than 0	ከ0 በላይ መሆን አለበት
+must be greater than 0.0	ከ0.0 በላይ መሆን አለበት
+must be greater than or equal to 0	ከ0 በላይ ወይም እኩል መሆን አለበት
+must be greater than or equal to 0.0	ከ0.0 በላይ ወይም እኩል መሆን አለበት
+must be a well-formed email address	ትክክለኛ ቅርጽ ያለው ኢሜይል አድራሻ መሆን አለበት
+size must be between {1} and {2}	ርዝመቱ በ{1} እና {2} መካከል መሆን አለበት
+must be a valid value	ትክክለኛ እሴት መሆን አለበት
+Branch	ቅርንጫፍ
+Product	ምርት
+Batch	ባች
+Sale	ሽያጭ
+User	ተጠቃሚ
+Supplier	አቅራቢ
+Role	ሚና
+Notification	ማሳወቂያ
+Customer	ደንበኛ
+Bank	ባንክ
+Transfer	ዝውውር
+Supplier return	የአቅራቢ ተመላሽ
+Stock change	የክምችት ለውጥ
+PurchaseOrder	የግዢ ትዕዛዝ
+Purchase order	የግዢ ትዕዛዝ
+Loan	ብድር
+Expense	ወጪ
+Debt	ዕዳ
+Customer return	የደንበኛ ተመላሽ
+# status words that can appear inside a message
+PENDING	በመጠባበቅ ላይ
+APPROVED	ጸድቋል
+REJECTED	ውድቅ ተደርጓል
+CANCELLED	ተሰርዟል
+COMPLETED	ተጠናቋል
+RECEIVED	ተቀብሏል
+PARTIALLY_RECEIVED	በከፊል ተቀብሏል
+IN_TRANSIT	በጉዞ ላይ
+NOT_SHIPPED	አልተላከም
+ARRIVED	ደርሷል
+DEPARTED	ተነስቷል
+DELAYED	ዘግይቷል
+DRAFT	ረቂቅ
+PAID	ተከፍሏል
+PARTIALLY_PAID	በከፊል ተከፍሏል
+OPEN	ክፍት
+OVERDUE	ጊዜው ያለፈበት
+STORE	መደብር
+WAREHOUSE	መጋዘን
+APPROVED or REJECTED	ጸድቋል ወይም ውድቅ ተደርጓል
+approved	ጸድቋል
+rejected	ውድቅ ተደርጓል

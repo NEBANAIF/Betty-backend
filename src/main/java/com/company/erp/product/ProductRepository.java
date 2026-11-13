@@ -21,6 +21,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
 
     Optional<Product> findBySkuIgnoreCase(String sku);
 
+    Optional<Product> findFirstByNameIgnoreCase(String name);
+
     /** idFilter: when not null, only products with one of these ids (an empty set matches nothing). */
     default Page<Product> search(boolean activeOnly, String search, Set<UUID> idFilter, Pageable pageable) {
         Specification<Product> spec = (root, query, cb) -> {
